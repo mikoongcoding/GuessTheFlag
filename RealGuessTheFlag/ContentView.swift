@@ -7,6 +7,31 @@
 
 import SwiftUI
 
+struct WhiteText : View {
+    var text : String
+    
+    var body: some View {
+        Text(text)
+            .foregroundColor(.white)
+    }
+}
+
+struct FrameVStack : ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 20)
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+    }
+}
+
+extension View {
+    func frameVStackStyle() -> some View {
+        modifier(FrameVStack())
+    }
+}
+
 struct ContentView: View {
     @State private var showCorrect = false
     @State private var showingScore = false
@@ -29,14 +54,11 @@ struct ContentView: View {
                 .ignoresSafeArea()
             VStack (spacing: 15){
                 VStack {
-                    Text("Tap the flag of")
-                        .foregroundColor(.white)
+                    WhiteText(text: "Tap the flag of")
                         .font(.subheadline.weight(.heavy))
-                    Text(countries[correctAnswer])
-                        .foregroundColor(.white)
+                    WhiteText(text: countries[correctAnswer])
                         .font(.largeTitle.weight(.bold))
-                    Text("Question : \(countOfGame) \\/ \(questionCnt)")
-                        .foregroundColor(.white)
+                    WhiteText(text: "Question : \(countOfGame) / \(questionCnt)")
                 }
                 ForEach(0..<3) { number in //0,1,2
                     Button {
@@ -56,12 +78,7 @@ struct ContentView: View {
                         askQuestion()
                     }
                     .buttonStyle(.borderedProminent)
-                    //.tint(.red)
                     Button{
-                        //TODO :
-                        //정답에 빨간 동그라미를 쳐서 알려주는 버튼인데
-                        //구현 방법을 도저히 모르겠다
-                        //저기 위에 그려진 flag image에 동그라미를 치는 방법은 뭘까?
                         if !showCorrect {
                             showCorrect.toggle()
                         } else {
@@ -77,10 +94,8 @@ struct ContentView: View {
                 }
                 
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 20)
-            .background(.regularMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
+//            .modifier(FrameVStack())
+            .frameVStackStyle()
         }
         .alert(scoreTitle, isPresented: $showingScore) {
             Button("Continue", action: askQuestion)
